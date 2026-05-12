@@ -1,0 +1,416 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Neon Dice | RPG Dice Roller & Local Character Profile</title>
+    <meta name="description" content="Neon Dice is a bilingual RPG dice roller web app with local character profiles, HP tracking, roll presets, original encounters, animated dice, exportable history and no external APIs." />
+    <meta name="keywords" content="RPG dice roller, online dice roller, tabletop RPG tool, d20 roller, fantasy RPG dice, cyberpunk RPG dice, character profile, HP tracker, roll presets, encounter tracker, vanilla JavaScript web app" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://neon-dice.vercel.app/" />
+    <meta property="og:title" content="Neon Dice | RPG Dice Roller & Local Character Profile" />
+    <meta property="og:description" content="Neon Dice is a bilingual RPG dice roller web app with local character profiles, HP tracking, roll presets, original encounters, animated dice, exportable history and no external APIs." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://neon-dice.vercel.app/" />
+    <meta property="og:site_name" content="Neon Dice" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Neon Dice | RPG Dice Roller & Local Character Profile" />
+    <meta name="twitter:description" content="Neon Dice is a bilingual RPG dice roller web app with local character profiles, HP tracking, roll presets, original encounters, animated dice, exportable history and no external APIs." />
+    <meta name="theme-color" content="#070711" />
+    <link rel="icon" href="assets/icons/favicon_io/favicon.ico" sizes="any" />
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/icons/favicon_io/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/icons/favicon_io/favicon-16x16.png" />
+    <link rel="apple-touch-icon" href="assets/icons/favicon_io/apple-touch-icon.png" />
+    <link rel="stylesheet" href="style.css" />
+    <script type="application/ld+json">
+        {
+          "@context": "https://schema.org",
+          "@type": "SoftwareApplication",
+          "name": "Neon Dice",
+          "applicationCategory": "GameApplication",
+          "operatingSystem": "Any",
+          "description": "A bilingual RPG dice roller web app with local character profiles, HP tracking, roll presets, original encounters, animated dice, exportable history and no external APIs.",
+          "creator": {
+            "@type": "Organization",
+            "name": "LYNX VISUAL DIVISION"
+          }
+        }
+    </script>
+</head>
+<body class="theme-fantasy">
+    <main class="app-shell">
+        <header class="hero">
+            <div class="hero-copy">
+                <p class="eyebrow" data-i18n="eyebrow">RPG Dice Roller</p>
+                <div class="brand-lockup">
+                    <img class="brand-icon" src="assets/icons/neon-dice-icon-clean.svg" alt="" aria-hidden="true" />
+                    <img class="brand-wordmark" src="assets/icons/neon-dice-wordmark-clean.svg" alt="Neon Dice" />
+                </div>
+                <h1 class="sr-only">Neon Dice</h1>
+                <p class="subtitle" data-i18n="heroSubtitle">
+                    Una mesa digital de dados para campañas fantasy, cyberpunk y sistemas personalizados.
+                </p>
+                <p class="hero-subcopy" data-i18n="heroSubcopy">
+                    Cree un perfil local, configure atributos, controle HP, lance dados animados y registre encuentros desde una web app ligera. Todo funciona en este navegador: sin cuentas, sin servidores y sin APIs externas.
+                </p>
+            </div>
+
+            <div class="hero-controls" aria-label="App settings">
+                <label class="field compact">
+                    <span data-i18n="language">Idioma</span>
+                    <select id="languageSelect">
+                        <option value="es">ES</option>
+                        <option value="en">EN</option>
+                    </select>
+                </label>
+
+                <div class="system-chip">
+                    <span data-i18n="activeSystem">Sistema activo</span>
+                    <strong id="activeSystemLabel">Classic Fantasy RPG</strong>
+                </div>
+            </div>
+
+            <p id="systemModeCopy" class="mode-copy">
+                Modo de fantasía clásica para campañas medievales, exploración de mazmorras y personajes heroicos.
+            </p>
+        </header>
+
+        <section class="grid-layout">
+            <section class="panel profile-panel" aria-labelledby="profileTitle">
+                <div class="panel-head">
+                    <div>
+                        <p class="section-kicker" data-i18n="profileKicker">Perfil local</p>
+                        <h2 id="profileTitle" data-i18n="profileTitle">Personaje</h2>
+                        <p class="panel-copy" data-i18n="profileCopy">Guarde un personaje local para asociar sus tiradas, atributos, notas y estado de campaña.</p>
+                    </div>
+                    <p id="profileStatus" class="status-text">Cree su primer personaje para vincular las tiradas a una campaña.</p>
+                </div>
+
+                <form id="profileForm" class="form-grid">
+                    <label class="field">
+                        <span data-i18n="playerName">Nombre del jugador</span>
+                        <input id="playerName" type="text" autocomplete="off" />
+                    </label>
+
+                    <label class="field">
+                        <span data-i18n="characterName">Nombre del personaje / alias</span>
+                        <input id="characterName" type="text" autocomplete="off" />
+                    </label>
+
+                    <label class="field">
+                        <span data-i18n="gameSystem">Sistema</span>
+                        <select id="gameSystem">
+                            <option value="fantasy">Classic Fantasy RPG</option>
+                            <option value="cyberpunk">Cyberpunk Modern RPG</option>
+                            <option value="custom">Custom RPG</option>
+                        </select>
+                    </label>
+
+                    <label class="field">
+                        <span data-i18n="level">Nivel</span>
+                        <input id="level" type="number" min="1" max="99" value="1" />
+                    </label>
+
+                    <label class="field">
+                        <span id="lineageRoleLabel" data-i18n="lineageRole">Linaje o rol</span>
+                        <select id="lineageRole"></select>
+                    </label>
+
+                    <label class="field">
+                        <span id="classArchetypeLabel" data-i18n="classArchetype">Clase o arquetipo</span>
+                        <select id="classArchetype"></select>
+                    </label>
+
+                    <label class="field span-2">
+                        <span data-i18n="description">Descripción corta</span>
+                        <input id="description" type="text" autocomplete="off" />
+                    </label>
+
+                    <label class="field span-2">
+                        <span data-i18n="campaignNotes">Notas de campaña</span>
+                        <textarea id="campaignNotes" rows="4" data-i18n-placeholder="notesPlaceholder" placeholder="Agregue notas de campaña, misión o trasfondo."></textarea>
+                    </label>
+                </form>
+
+                <p class="privacy-note" data-i18n="privacyNote">Su perfil se guarda únicamente en este dispositivo.</p>
+
+                <div class="actions">
+                    <button id="saveProfile" type="button" data-i18n="saveProfile">Guardar perfil</button>
+                    <button id="resetProfile" class="ghost" type="button" data-i18n="resetProfile">Borrar perfil</button>
+                </div>
+            </section>
+
+            <section class="panel attributes-panel" aria-labelledby="attributesTitle">
+                <div class="panel-head">
+                    <div>
+                        <p class="section-kicker" data-i18n="attributesKicker">Atributos</p>
+                        <h2 id="attributesTitle" data-i18n="attributesTitle">Sistema activo</h2>
+                        <p class="panel-copy" data-i18n="attributesCopy">Los atributos cambian según el sistema activo para mantener cada campaña organizada.</p>
+                    </div>
+                    <span class="mini-badge" id="attributeCount">6</span>
+                </div>
+                <div id="attributesGrid" class="attributes-grid"></div>
+            </section>
+
+            <section class="panel hp-panel" aria-labelledby="hpTitle">
+                <div class="panel-head">
+                    <div>
+                        <p class="section-kicker" data-i18n="hpKicker">HP Tracker</p>
+                        <h2 id="hpTitle" data-i18n="hpTitle">Puntos de golpe</h2>
+                        <p class="panel-copy" data-i18n="hpCopy">Controle daño y curación del personaje. También puede aplicar directamente la última tirada.</p>
+                    </div>
+                    <span id="hpState" class="mini-badge hp-state">Estable</span>
+                </div>
+
+                <div class="hp-meter" aria-hidden="true">
+                    <span id="hpBar"></span>
+                </div>
+                <p id="hpReadout" class="hp-readout">24 / 24 HP</p>
+                <p id="lastRollHp" class="last-roll" data-i18n="lastRollEmpty">Última tirada: -</p>
+
+                <div class="hp-controls">
+                    <label class="field">
+                        <span data-i18n="maxHp">HP máximo</span>
+                        <input id="maxHp" type="number" min="1" max="999" value="24" />
+                    </label>
+                    <label class="field">
+                        <span data-i18n="currentHp">HP actual</span>
+                        <input id="currentHp" type="number" min="0" max="999" value="24" />
+                    </label>
+                    <label class="field">
+                        <span data-i18n="hpDelta">Daño / curación rápida</span>
+                        <input id="hpDelta" type="number" min="0" max="999" value="1" />
+                    </label>
+                </div>
+
+                <div class="actions compact-actions">
+                    <button id="applyDamage" type="button" data-i18n="applyDamage">Aplicar daño</button>
+                    <button id="healHp" class="ghost" type="button" data-i18n="heal">Curar</button>
+                    <button id="resetHp" class="ghost" type="button" data-i18n="resetHp">Restaurar HP</button>
+                </div>
+                <div class="actions compact-actions last-roll-actions">
+                    <button id="lastRollDamage" class="ghost" type="button" data-i18n="lastRollDamage">Usar última tirada como daño</button>
+                    <button id="lastRollHeal" class="ghost" type="button" data-i18n="lastRollHeal">Usar última tirada como curación</button>
+                </div>
+                <p id="hpFeedback" class="status-text inline-status"></p>
+            </section>
+        </section>
+
+        <section class="roller-layout">
+            <section class="panel dice-panel" aria-labelledby="rollerTitle">
+                <div class="panel-head">
+                    <div>
+                        <p class="section-kicker" data-i18n="rollerKicker">Dice Roller</p>
+                        <h2 id="rollerTitle" data-i18n="rollerTitle">Tirada rápida</h2>
+                        <p class="panel-copy" data-i18n="rollerCopy">Seleccione dado, cantidad, modificador y tipo de tirada. El resultado queda guardado en el historial.</p>
+                    </div>
+                    <span class="mini-badge">d20</span>
+                </div>
+
+                <div class="dice-stage">
+                    <div id="diceDisplay" class="die-shape die-d20" aria-live="polite">
+                        <span class="die-facet facet-a"></span>
+                        <span class="die-facet facet-b"></span>
+                        <span class="die-facet facet-c"></span>
+                        <span id="diceValue" class="die-value">20</span>
+                        <span class="die-mark">d20</span>
+                    </div>
+                    <div class="roll-readout">
+                        <p class="readout-label" data-i18n="total">Total</p>
+                        <strong id="totalResult">-</strong>
+                        <p id="individualResults" class="muted" data-i18n="rollPrompt">Configura tu tirada y presiona Roll.</p>
+                    </div>
+                </div>
+
+                <div class="roller-controls">
+                    <label class="field">
+                        <span data-i18n="diceType">Dado</span>
+                        <select id="diceType">
+                            <option value="4">d4</option>
+                            <option value="6">d6</option>
+                            <option value="8">d8</option>
+                            <option value="10">d10</option>
+                            <option value="12">d12</option>
+                            <option value="20" selected>d20</option>
+                            <option value="100">d100</option>
+                        </select>
+                    </label>
+
+                    <label class="field">
+                        <span data-i18n="quantity">Cantidad</span>
+                        <input id="diceQuantity" type="number" min="1" max="10" value="1" />
+                    </label>
+
+                    <label class="field">
+                        <span data-i18n="modifier">Modificador</span>
+                        <input id="modifier" type="number" min="-99" max="99" value="0" />
+                    </label>
+
+                    <label class="field">
+                        <span data-i18n="rollType">Tipo de tirada</span>
+                        <select id="rollType"></select>
+                    </label>
+
+                    <button id="rollDice" class="roll-button" type="button" data-i18n="rollDice">Tirar dados</button>
+                </div>
+            </section>
+
+            <section class="panel presets-panel" aria-labelledby="presetsTitle">
+                <div class="panel-head">
+                    <div>
+                        <p class="section-kicker" data-i18n="presetsKicker">Presets</p>
+                        <h2 id="presetsTitle" data-i18n="presetsTitle">Tiradas rápidas</h2>
+                        <p class="panel-copy" data-i18n="presetsCopy">Guarde tiradas frecuentes para resolver acciones repetidas con un clic.</p>
+                    </div>
+                    <span id="presetCount" class="mini-badge">0 / 8</span>
+                </div>
+
+                <div class="preset-save">
+                    <label class="field">
+                        <span data-i18n="presetName">Nombre del preset</span>
+                        <input id="presetName" type="text" autocomplete="off" />
+                    </label>
+                    <button id="savePreset" type="button" data-i18n="savePreset">Guardar preset</button>
+                </div>
+
+                <div id="presetList" class="preset-list">
+                    <p class="empty-state" data-i18n="emptyPresets">Guarde sus tiradas frecuentes para lanzar ataques, pruebas o hackeos con un clic.</p>
+                </div>
+            </section>
+
+            <section class="panel history-panel" aria-labelledby="historyTitle">
+                <div class="panel-head">
+                    <div>
+                        <p class="section-kicker" data-i18n="historyKicker">Registro</p>
+                        <h2 id="historyTitle" data-i18n="historyTitle">Historial</h2>
+                        <p class="panel-copy" data-i18n="historyCopy">Consulte, copie o descargue el registro de sesión en formato TXT.</p>
+                    </div>
+                    <div class="history-actions">
+                        <button id="copyHistory" class="ghost small" type="button" data-i18n="copyHistory">Copiar historial</button>
+                        <button id="downloadHistory" class="ghost small" type="button" data-i18n="downloadTxt">Descargar TXT</button>
+                        <button id="clearHistory" class="ghost small" type="button" data-i18n="clearHistory">Limpiar historial</button>
+                    </div>
+                </div>
+                <p id="historyFeedback" class="status-text inline-status"></p>
+                <div id="historyList" class="history-list">
+                    <p class="empty-state" data-i18n="emptyHistory">Todavía no hay tiradas. Seleccione un dado y lance su primera prueba.</p>
+                </div>
+            </section>
+        </section>
+
+        <section class="panel encounter-panel" aria-labelledby="encounterTitle">
+            <div class="panel-head">
+                <div>
+                    <p class="section-kicker" data-i18n="encounterKicker">Sesión</p>
+                    <h2 id="encounterTitle" data-i18n="encounterTitle">Encuentros</h2>
+                    <p class="panel-copy" data-i18n="encounterCopy">Cargue encuentros originales con HP propio para probar ataques, daño, curación y escenas de combate.</p>
+                </div>
+                <span id="encounterDifficulty" class="mini-badge">standard</span>
+            </div>
+
+            <div class="encounter-grid">
+                <div class="encounter-select">
+                    <label class="field">
+                        <span data-i18n="encounterSelect">Encuentro</span>
+                        <select id="encounterSelect"></select>
+                    </label>
+                    <button id="loadEncounter" type="button" data-i18n="loadEncounter">Cargar encuentro</button>
+                </div>
+
+                <article class="encounter-card">
+                    <div class="history-top">
+                        <div>
+                            <strong id="encounterName">-</strong>
+                            <p id="encounterSuggested" class="history-meta">-</p>
+                        </div>
+                        <div id="encounterHpReadout" class="history-total">0</div>
+                    </div>
+                    <p id="encounterDescription" class="history-meta">-</p>
+                    <div class="hp-meter encounter-meter" aria-hidden="true">
+                        <span id="encounterHpBar"></span>
+                    </div>
+                    <p id="lastRollEncounter" class="last-roll" data-i18n="lastRollEmpty">Última tirada: -</p>
+                </article>
+
+                <div class="encounter-actions">
+                    <label class="field">
+                        <span data-i18n="encounterDelta">Daño / curación</span>
+                        <input id="encounterDelta" type="number" min="0" max="999" value="5" />
+                    </label>
+                    <div class="actions compact-actions">
+                        <button id="damageEncounter" type="button" data-i18n="applyDamage">Aplicar daño</button>
+                        <button id="healEncounter" class="ghost" type="button" data-i18n="healEncounter">Curar encuentro</button>
+                        <button id="resetEncounter" class="ghost" type="button" data-i18n="resetEncounter">Restaurar encuentro</button>
+                    </div>
+                    <div class="actions compact-actions last-roll-actions">
+                        <button id="lastRollEncounterDamage" class="ghost" type="button" data-i18n="lastRollEncounterDamage">Usar última tirada como daño al encuentro</button>
+                        <button id="lastRollEncounterHeal" class="ghost" type="button" data-i18n="lastRollEncounterHeal">Usar última tirada como curación del encuentro</button>
+                    </div>
+                    <p id="encounterFeedback" class="status-text inline-status"></p>
+                </div>
+            </div>
+        </section>
+
+        <section class="panel about-panel" aria-labelledby="aboutTitle">
+            <div>
+                <p class="section-kicker" data-i18n="aboutKicker">Portfolio</p>
+                <h2 id="aboutTitle" data-i18n="aboutTitle">About Neon Dice</h2>
+            </div>
+            <p data-i18n="aboutText">
+                Neon Dice es una web app RPG bilingüe creada como herramienta funcional y pieza de portafolio interactiva. Combina perfiles locales, dados animados, HP Tracker, presets, encuentros e historial exportable en una experiencia estática construida con HTML, CSS y JavaScript vanilla. No usa cuentas, servidores ni APIs externas.
+            </p>
+        </section>
+
+        <section class="panel related-panel" aria-labelledby="relatedTitle">
+            <div class="panel-head">
+                <div>
+                    <p class="section-kicker">LYNX VISUAL DIVISION</p>
+                    <h2 id="relatedTitle" data-i18n="relatedTitle">Más proyectos de LYNX VISUAL DIVISION</h2>
+                    <p class="panel-copy" data-i18n="relatedCopy">Explore otras web apps, herramientas visuales y experimentos interactivos del estudio.</p>
+                </div>
+            </div>
+
+            <div class="project-grid">
+                <a class="project-card" href="https://darkwallet.vercel.app/" target="_blank" rel="noopener noreferrer">
+                    <span>01</span>
+                    <strong>Dark Wallet</strong>
+                </a>
+                <a class="project-card" href="https://qrstudio-generator.vercel.app/" target="_blank" rel="noopener noreferrer">
+                    <span>02</span>
+                    <strong>QR Studio Generator</strong>
+                </a>
+                <a class="project-card" href="https://my-astrology-app.vercel.app/" target="_blank" rel="noopener noreferrer">
+                    <span>03</span>
+                    <strong>My Astrology App</strong>
+                </a>
+                <a class="project-card" href="https://social-comment-generator.vercel.app/es" target="_blank" rel="noopener noreferrer">
+                    <span>04</span>
+                    <strong>Social Comment Generator</strong>
+                </a>
+                <a class="project-card" href="https://radar-ventas-digital.vercel.app/" target="_blank" rel="noopener noreferrer">
+                    <span>05</span>
+                    <strong>Radar Ventas Digital</strong>
+                </a>
+            </div>
+        </section>
+
+        <footer class="site-footer">
+            <div>
+                <img class="footer-brand-icon" src="assets/icons/neon-dice-icon-clean.svg" alt="" aria-hidden="true" />
+                <p data-i18n="footerCredit">Diseñado y desarrollado por LYNX VISUAL DIVISION como una web app experimental para juegos de rol, interfaces interactivas y herramientas digitales sin backend.</p>
+                <p data-i18n="footerTech">Construida con HTML, CSS y JavaScript vanilla. Los datos se guardan localmente en este navegador.</p>
+                <p>© 2026 LYNX VISUAL DIVISION. All rights reserved.</p>
+            </div>
+            <div class="footer-badges" aria-label="Technical badges">
+                <span>Vanilla JS</span>
+                <span>LocalStorage</span>
+                <span>No APIs</span>
+                <span>RPG Tool</span>
+                <span>Portfolio App</span>
+            </div>
+        </footer>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>
